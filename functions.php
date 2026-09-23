@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ZARRIN_VERSION', '1.0.0' );
+define( 'ZARRIN_VERSION', '1.4.1' );
 
 /* =========================================================
  * ۱) راه‌اندازی قالب
@@ -105,7 +105,8 @@ add_action( 'widgets_init', 'zarrin_widgets_init' );
  * ======================================================= */
 function zarrin_assets() {
 
-	wp_enqueue_style( 'zarrin-style', get_stylesheet_uri(), array(), ZARRIN_VERSION );
+	// پوسته رنگ فعال (دموی ۱ تا ۴) — هر پوسته یک استایل کامل است.
+	wp_enqueue_style( 'zarrin-style', zarrin_skin_css(), array(), ZARRIN_VERSION );
 
 	// فونت وزیرمتن — لوکال (بدون نیاز به اینترنت/CDN).
 	wp_add_inline_style(
@@ -135,6 +136,154 @@ add_action( 'wp_enqueue_scripts', 'zarrin_assets' );
 /* =========================================================
  * ۵) توابع کمکی
  * ======================================================= */
+
+/* =========================================================
+ * ۵-۱) پوسته‌های رنگ — چهار دموی آماده در یک قالب
+ * ======================================================= */
+
+/** فهرست پوسته‌های رنگ قالب */
+function zarrin_skins() {
+	return array(
+		'gold'    => array(
+			'name'  => 'زرین — تیره طلایی',
+			'demo'  => 'دموی ۱',
+			'label' => 'زرین',
+		),
+		'light'   => array(
+			'name'  => 'زرین روشن — سفید-عاجی',
+			'demo'  => 'دموی ۲',
+			'label' => 'زرین روشن',
+		),
+		'emerald' => array(
+			'name'  => 'زرین زمرد — زمرد تیره',
+			'demo'  => 'دموی ۳',
+			'label' => 'زرین زمرد',
+		),
+		'choco'   => array(
+			'name'  => 'زرین کاکائو — شکلاتی/کاراملی',
+			'demo'  => 'دموی ۴',
+			'label' => 'زرین کاکائو',
+		),
+		'rose'    => array(
+			'name'  => 'زرین رزگلد — رزگلد پودری',
+			'demo'  => 'دموی ۵',
+			'label' => 'زرین رزگلد',
+		),
+	);
+}
+
+/** شناسه پوسته فعال */
+function zarrin_skin() {
+	$skin  = zarrin_get( 'zarrin_demo_skin', 'light' );
+	$skins = zarrin_skins();
+	return isset( $skins[ $skin ] ) ? $skin : 'gold';
+}
+
+/** نام کوتاه پوسته/دموی فعال (برای متن‌های پیشخوان) */
+function zarrin_demo_name() {
+	$skins = zarrin_skins();
+	$skin  = zarrin_skin();
+	return $skins[ $skin ]['label'];
+}
+
+/**
+ * پیش‌تنظیم‌های محتوایی هر دمو (نام فروشگاه، متن فوتر، بنر تماس و درباره ما).
+ * هنگام «راه‌اندازی دمو» اعمال می‌شوند تا هر دمو هویت کامل خودش را داشته باشد.
+ *
+ * @return array
+ */
+function zarrin_skin_presets() {
+	$skin    = zarrin_skin();
+	$presets = array(
+		'gold'    => array(
+			'blogname'        => 'طلا و جواهر زرین',
+			'blogdescription' => 'فروشگاه آنلاین طلا و جواهر با قیمت لحظه‌ای',
+			'footer_about'    => 'طلافروشی زرین؛ عرضه‌کننده انواع طلا و جواهر با ضمانت اصالت، قیمت لحظه‌ای روز و امکان معاوضه. خرید شما را با خیال راحت انجام دهید.',
+			'cta_title'       => 'خرید طلا را به اعتماد بسپارید',
+			'cta_sub'         => 'کارشناسان ما پاسخگوی سوالات شما درباره قیمت روز، معاوضه و ساخت سفارشی هستند.',
+			'about_text'      => 'زرین با بیش از دو دهه تجربه در عرضه طلا و جواهر، مجموعه‌ای منتخب از زیباترین طرح‌های طلای ۱۸ و ۲۴ عیار را با ضمانت کتبی اصالت و عیار ارائه می‌کند.',
+		),
+		'light'   => array(
+			'blogname'        => 'طلا و جواهر زرین روشن',
+			'blogdescription' => 'گالری طلا و جواهر با میزبانى روشن و آرام',
+			'footer_about'    => 'گالری زرین روشن؛ مجموعه‌ای روشن و خوانا از طلا و جواهر با ضمانت اصالت و قیمت لحظه‌ای روز. تجربه‌ای آرام از خرید طلا.',
+			'cta_title'       => 'انتخاب طلای خود را ساده کنید',
+			'cta_sub'         => 'کارشناسان ما برای راهنمایی خرید، معاوضه و ساخت سفارشی در کنار شما هستند.',
+			'about_text'      => 'زرین روشن با فضایی آرام و شفاف، زیباترین طرح‌های طلای ۱۸ عیار را با ضمانت کتبی اصالت و قیمت روز بازار ارائه می‌کند.',
+		),
+		'emerald' => array(
+			'blogname'        => 'طلا و جواهر زرین زمرد',
+			'blogdescription' => 'جواهرات نفیس با میزبانی زمرد و طلای شامپاینی',
+			'footer_about'    => 'گالری زرین زمرد؛ گزیده‌ای نفیس از طلا و جواهر با ضمانت اصالت، قیمت لحظه‌ای و خدمات معاوضه — در فضایی آرام و گالری‌وار.',
+			'cta_title'       => 'درخشش زمرد، اصالت طلا',
+			'cta_sub'         => 'برای مشاوره خرید، استعلام قیمت روز و سفارش ساخت اختصاصی با ما گفتگو کنید.',
+			'about_text'      => 'زرین زمرد گزیده‌ای از نفیس‌ترین طرح‌های طلا و جواهر را با ضمانت کتبی اصالت و عیار، همراه با قیمت لحظه‌ای بازار ارائه می‌کند.',
+		),
+		'choco'   => array(
+			'blogname'        => 'طلا و جواهر زرین کاکائو',
+			'blogdescription' => 'طلا و جواهر با حس گرم شکلات و کارامل',
+			'footer_about'    => 'زرین کاکائو؛ گرمای طلا با حس دنج شکلات. عرضه انواع طلا و جواهر با ضمانت اصالت، قیمت لحظه‌ای روز و امکان معاوضه.',
+			'cta_title'       => 'گرمای طلا را هدیه دهید',
+			'cta_sub'         => 'برای انتخاب هدیه، مشاوره خرید و استعلام قیمت روز، کارشناسان ما پاسخگو هستند.',
+			'about_text'      => 'زرین کاکائو با فضایی گرم و دنج، منتخبی از زیباترین طرح‌های طلا و جواهر را با ضمانت کتبی اصالت و قیمت روز بازار عرضه می‌کند.',
+		),
+		'rose'    => array(
+			'blogname'        => 'طلا و جواهر زرین رزگلد',
+			'blogdescription' => 'جواهرات رزگلد؛ لطیف، ماندگار و برای هدیه',
+			'footer_about'    => 'گالری زرین رزگلد؛ مجموعه‌ای لطیف از جواهرات رزگلد و طلای ۱۸ عیار با ضمانت اصالت، قیمت لحظه‌ای روز و امکان معاوضه — برای لحظه‌های خاص.',
+			'cta_title'       => 'لحظه‌های خاص را ماندگار کنید',
+			'cta_sub'         => 'برای انتخاب هدیه، مشاوره خرید و سفارش ساخت سفارشی رزگلد در کنار شما هستیم.',
+			'about_text'      => 'زرین رزگلد با تمرکز بر جواهرات رزگلد و طرح‌های لطیف، گزیده‌ای از زیباترین قطعات طلای ۱۸ عیار را با ضمانت کتبی اصالت و قیمت روز بازار ارائه می‌کند.',
+		),
+	);
+
+	return isset( $presets[ $skin ] ) ? $presets[ $skin ] : $presets['gold'];
+}
+
+/** آدرس فایل استایل پوسته فعال */
+function zarrin_skin_css() {
+	$skin = zarrin_skin();
+	if ( 'gold' === $skin ) {
+		return get_stylesheet_uri();
+	}
+	return get_template_directory_uri() . '/assets/css/skin-' . $skin . '.css';
+}
+
+/** مسیر پوشه تصاویر نمونه پوسته فعال */
+function zarrin_skin_img_dir() {
+	$skin = zarrin_skin();
+	if ( 'gold' !== $skin && file_exists( get_template_directory() . '/assets/img/skins/' . $skin . '/hero.jpg' ) ) {
+		return get_template_directory() . '/assets/img/skins/' . $skin;
+	}
+	return get_template_directory() . '/assets/img';
+}
+
+/**
+ * آدرس تصویر نمونه برای یک پوسته دلخواه.
+ *
+ * @param string $skin شناسه پوسته.
+ * @param string $file نام فایل تصویر.
+ * @return string
+ */
+function zarrin_skin_img_for( $skin, $file ) {
+	$skins = zarrin_skins();
+	if ( 'gold' !== $skin && isset( $skins[ $skin ] ) && file_exists( get_template_directory() . '/assets/img/skins/' . $skin . '/' . $file ) ) {
+		return get_template_directory_uri() . '/assets/img/skins/' . $skin . '/' . $file;
+	}
+	return get_template_directory_uri() . '/assets/img/' . $file;
+}
+
+/** آدرس تصویر نمونه پوسته فعال */
+function zarrin_skin_img( $file ) {
+	return zarrin_skin_img_for( zarrin_skin(), $file );
+}
+
+/** افزودن کلاس پوسته به body */
+function zarrin_body_class( $classes ) {
+	$classes[] = 'zarrin-skin-' . zarrin_skin();
+	return $classes;
+}
+add_filter( 'body_class', 'zarrin_body_class' );
 
 /** آیا ووکامرس فعال است؟ */
 function zarrin_is_woo() {
@@ -174,6 +323,9 @@ function zarrin_live_enabled() {
 // راه‌اندازی دمو با یک کلیک.
 require get_template_directory() . '/inc/demo-import.php';
 
+// مدیریت دموها (انتخاب سریع از نوار بالای پیشخوان + کارت‌های تصویری).
+require get_template_directory() . '/inc/skins-admin.php';
+
 /** آیکون‌های SVG قالب */
 function zarrin_icon( $name, $size = 20 ) {
 	$common = 'width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"';
@@ -202,6 +354,15 @@ function zarrin_icon( $name, $size = 20 ) {
 		'calendar' => '<svg ' . $common . '><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
 		'pen'      => '<svg ' . $common . '><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
 	);
+
+	// نام‌های جایگزین (هدر و فوتر از instagram/whatsapp استفاده می‌کنند).
+	$aliases = array(
+		'instagram' => 'insta',
+		'whatsapp'  => 'whats',
+	);
+	if ( isset( $aliases[ $name ] ) ) {
+		$name = $aliases[ $name ];
+	}
 
 	return isset( $icons[ $name ] ) ? $icons[ $name ] : '';
 }
@@ -495,6 +656,38 @@ function zarrin_customize_register( $wp_customize ) {
 			)
 		);
 	}
+
+	/* ============ بخش: ظاهر سایت (انتخاب دمو) ============ */
+	$wp_customize->add_section(
+		'zarrin_skin_section',
+		array(
+			'title'       => 'ظاهر سایت — انتخاب دمو',
+			'panel'       => 'zarrin_panel',
+			'priority'    => 1,
+			'description' => 'چهار دموی آماده زرین در یک قالب. با تغییر این گزینه، رنگ‌بندی، جزئیات ظاهری و تصاویر نمونه سایت عوض می‌شود؛ متن‌ها و تصاویری که خودتان تغییر داده باشید دست‌نخورده می‌ماند.',
+		)
+	);
+	$wp_customize->add_setting(
+		'zarrin_demo_skin',
+		array(
+			'default'           => 'gold',
+			'sanitize_callback' => 'sanitize_key',
+		)
+	);
+	$zarrin_skin_choices = array();
+	foreach ( zarrin_skins() as $zarrin_slug => $zarrin_info ) {
+		$zarrin_skin_choices[ $zarrin_slug ] = $zarrin_info['name'] . ' — ' . $zarrin_info['demo'];
+	}
+	$wp_customize->add_control(
+		'zarrin_demo_skin',
+		array(
+			'label'       => 'پوسته رنگ (دمو)',
+			'description' => 'دموی ۱: تیره طلایی (پیش‌فرض) — دموی ۲: روشن عاجی — دموی ۳: زمرد تیره — دموی ۴: شکلاتی/کاراملی',
+			'section'     => 'zarrin_skin_section',
+			'type'        => 'select',
+			'choices'     => $zarrin_skin_choices,
+		)
+	);
 
 	/* ============ بخش: هیرو ============ */
 	$wp_customize->add_section(

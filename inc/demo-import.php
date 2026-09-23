@@ -19,8 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /** افزودن صفحه «راه‌اندازی دمو» زیر منوی نمایش */
 function zarrin_demo_menu() {
 	add_theme_page(
-		'راه‌اندازی دمو زرین روشن',
-		'راه‌اندازی دمو زرین روشن',
+		'راه‌اندازی دمو ' . zarrin_demo_name(),
+		'راه‌اندازی دمو ' . zarrin_demo_name(),
 		'manage_options',
 		'zarrin-demo',
 		'zarrin_demo_page'
@@ -33,15 +33,42 @@ function zarrin_demo_page() {
 	$done    = (bool) get_option( 'zarrin_demo_done' );
 	$success = isset( $_GET['zarrin_demo'] ) && 'done' === $_GET['zarrin_demo']; // phpcs:ignore WordPress.Security.NonceVerification
 	$error   = isset( $_GET['zarrin_demo'] ) && 'error' === $_GET['zarrin_demo']; // phpcs:ignore WordPress.Security.NonceVerification
+	$reset   = isset( $_GET['zarrin_demo'] ) && 'reset' === $_GET['zarrin_demo']; // phpcs:ignore WordPress.Security.NonceVerification
 	$url     = wp_nonce_url( admin_url( 'admin-post.php?action=zarrin_demo_import' ), 'zarrin_demo_import' );
 	?>
 	<div class="wrap">
-		<h1>🚀 راه‌اندازی دمو — قالب زرین</h1>
+		<h1>🚀 راه‌اندازی دمو — قالب <?php echo esc_html( zarrin_demo_name() ); ?></h1>
 
 		<?php if ( $success ) : ?>
 			<div class="notice notice-success is-dismissible"><p><strong>دمو با موفقیت راه‌اندازی شد!</strong> حالا <a href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank">صفحه اصلی سایت</a> را ببینید.</p></div>
+		<?php elseif ( $reset ) : ?>
+			<div class="notice notice-info is-dismissible"><p><strong>دمو بازنشانی شد.</strong> حالا می‌توانید دوباره دکمه «راه‌اندازی دمو با یک کلیک» را بزنید تا محتوای نمونه دموی فعال ساخته شود.</p></div>
 		<?php elseif ( $error ) : ?>
 			<div class="notice notice-error is-dismissible"><p><strong>خطا:</strong> دمو قبلاً راه‌اندازی شده و نمی‌توان دوباره اجرا کرد.</p></div>
+		<?php endif; ?>
+
+		<?php if ( function_exists( 'zarrin_skins_cards_html' ) ) : ?>
+			<div class="card" style="max-width:880px;padding:8px 26px 20px;margin-bottom:18px;">
+				<h2>🎨 انتخاب دمو — <?php echo esc_html( zarrin_fa_digits( count( zarrin_skins() ) ) ); ?> دمو در دسترس</h2>
+				<p style="margin-top:0;">
+					قالب زرین چند دموی آماده <strong>درون خودش</strong> دارد؛ دموها قالب جداگانه نیستند.
+					با فعال‌سازی هر دمو، رنگ‌بندی و تصاویر نمونه سایت عوض می‌شود.
+					دموی فعال کنونی: <strong><?php echo esc_html( zarrin_demo_name() ); ?></strong>
+				</p>
+				<?php echo zarrin_skins_cards_html(); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+				<p style="margin:16px 0 0;">
+					<a class="button" href="<?php echo esc_url( admin_url( 'customize.php?autofocus[section]=zarrin_skin_section' ) ); ?>">تنظیمات بیشتر در سفارشی‌سازی</a>
+					<?php if ( get_option( 'zarrin_demo_done' ) ) : ?>
+						<a class="button" style="margin-inline-start:8px;" href="<?php echo esc_url( zarrin_demo_reset_url() ); ?>">ساخت دوباره محتوای نمونه</a>
+					<?php endif; ?>
+				</p>
+				<p style="margin:12px 0 0;color:#666;font-size:12px;line-height:1.9;">
+					نسخه قالب: <strong><?php echo esc_html( zarrin_fa_digits( ZARRIN_VERSION ) ); ?></strong>
+					— اگر تعداد دموها کمتر از پنج است، یعنی نسخه قدیمی نصب شده؛ آخرین بسته از
+					<a href="https://github.com/ahoseiny270-create/zarrin-gold-theme/releases" target="_blank" rel="noopener">صفحه Releases گیت‌هاب</a> قابل دانلود است.
+					برای دیدن تصاویر محصولات هر دمو، یک‌بار «ساخت دوباره محتوای نمونه» را بزنید.
+				</p>
+			</div>
 		<?php endif; ?>
 
 		<div class="card" style="max-width:760px;padding:8px 26px 20px;">
@@ -83,10 +110,10 @@ function zarrin_demo_notice() {
 	?>
 	<div class="notice notice-info is-dismissible" style="border-inline-start-color:#c9a227;">
 		<p>
-			<strong>🎉 قالب زرین روشن فعال شد!</strong>
+			<strong>🎉 قالب <?php echo esc_html( zarrin_demo_name() ); ?> فعال شد!</strong>
 			برای اینکه سایت دقیقاً مثل دمو شود، یک‌بار دکمه زیر را بزنید:
 			<a href="<?php echo esc_url( $url ); ?>" class="button button-primary" style="margin:0 8px;background:#c9a227;border-color:#a8841c;">راه‌اندازی دمو با یک کلیک</a>
-			یا از منوی <a href="<?php echo esc_url( admin_url( 'themes.php?page=zarrin-demo' ) ); ?>">نمایش ← راه‌اندازی دمو زرین روشن</a>
+			یا از منوی <a href="<?php echo esc_url( admin_url( 'themes.php?page=zarrin-demo' ) ); ?>">نمایش ← راه‌اندازی دمو</a>
 		</p>
 	</div>
 	<?php
@@ -121,10 +148,10 @@ add_action( 'admin_post_zarrin_demo_import', 'zarrin_demo_handle' );
  */
 function zarrin_demo_attach( $filename, $title ) {
 	$upload = wp_upload_dir();
-	$dest   = $upload['basedir'] . '/' . $filename;
+	$dest   = $upload['basedir'] . '/zarrin-' . zarrin_skin() . '-' . $filename;
 	if ( ! file_exists( $dest ) ) {
 		// phpcs:ignore WordPress.PHP.NoSilencedErrors
-		@copy( get_template_directory() . '/assets/img/' . $filename, $dest );
+		@copy( zarrin_skin_img_dir() . '/' . $filename, $dest );
 	}
 	if ( ! file_exists( $dest ) ) {
 		return 0;
@@ -393,11 +420,15 @@ function zarrin_run_demo_import() {
 	set_theme_mod( 'zarrin_instagram', 'https://instagram.com/' );
 	set_theme_mod( 'zarrin_telegram', 'https://t.me/' );
 	set_theme_mod( 'zarrin_whatsapp', 'https://wa.me/989123456789' );
-	set_theme_mod( 'zarrin_footer_about', 'طلافروشی زرین؛ عرضه‌کننده انواع طلا و جواهر با ضمانت اصالت، قیمت لحظه‌ای روز و امکان معاوضه. خرید شما را با خیال راحت انجام دهید.' );
+	$zarrin_preset = zarrin_skin_presets();
+	set_theme_mod( 'zarrin_footer_about', $zarrin_preset['footer_about'] );
+	set_theme_mod( 'zarrin_cta_title', $zarrin_preset['cta_title'] );
+	set_theme_mod( 'zarrin_cta_sub', $zarrin_preset['cta_sub'] );
+	set_theme_mod( 'zarrin_about_text', $zarrin_preset['about_text'] );
 
 	/* --- ۷) تنظیمات کلی وردپرس --- */
-	update_option( 'blogname', 'طلا و جواهر زرین' );
-	update_option( 'blogdescription', 'فروشگاه آنلاین طلا و جواهر با قیمت لحظه‌ای' );
+	update_option( 'blogname', $zarrin_preset['blogname'] );
+	update_option( 'blogdescription', $zarrin_preset['blogdescription'] );
 	update_option( 'permalink_structure', '/%postname%/' );
 	flush_rewrite_rules();
 
